@@ -8,9 +8,9 @@ defaultImageDir = "assets/"
 module.exports = MarkdownImageAssistant =
     subscriptions: null
     config:
-        useSameDir:
+        aUseSameDir:
             title: "Images in Same Directory"
-            description: "Choose rather put the images in the same directory as the markdown file, ignoring the assets folder entirely."
+            description: "Choose rather put the images in the same directory as the markdown file, ignoring the assets folder / image directory entirely."
             type: 'boolean'
             default: true
         suffixes:
@@ -24,12 +24,12 @@ module.exports = MarkdownImageAssistant =
             title: "Preserve original file names"
             description: "When dragging and dropping files, whether to perserve original file names when copying over into the image directory"
             type: 'boolean'
-            default: false
+            default: true
         prependTargetFileName:
             title: "Prepend the target file name"
             description: "Whether to prepend the target file name when copying over the image. Overrides the \"Preserve Original Name\" setting."
             type: 'boolean'
-            default: true
+            default: false
         preserveFileNameInAssetsFolder:
             title: "Create per-file asset directories"
             description: "Creates a separate asset directory for each markdown file, e.g. `README.assets/`; setting `Image Directory` to a value other than the default of `assets/` overrides this option"
@@ -111,7 +111,7 @@ module.exports = MarkdownImageAssistant =
             assets_dir = path.basename(atom.config.get('markdown-image-assistant.imageDir'))
 
         # yeah this probably ineffiecent. -JacqsLabz
-        if atom.config.get('markdown-image-assistant.useSameDir')
+        if atom.config.get('markdown-image-assistant.aUseSameDir')
           assets_dir = ""
 
         assets_path = path.join(target_file, "..", assets_dir)
