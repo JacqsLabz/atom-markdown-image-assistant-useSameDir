@@ -78,7 +78,7 @@ module.exports = MarkdownImageAssistant =
             if fs.lstatSync(f.path).isFile()
                 imgbuffer = new Buffer(fs.readFileSync(f.path))
                 extname = path.extname(String(f.path))
-                if atom.config.get('markdown-image-assistant.preserveOrigName')
+                if atom.config.get('markdown-image-assistant-useSameDir.preserveOrigName')
                     origname = path.basename(f.path, extname)
                 else
                     origname = ""
@@ -101,17 +101,17 @@ module.exports = MarkdownImageAssistant =
     process_file: (editor, imgbuffer, extname, origname) ->
         target_file = editor.getPath()
 
-        if path.extname(target_file) not in atom.config.get('markdown-image-assistant.suffixes')
+        if path.extname(target_file) not in atom.config.get('markdown-image-assistant-useSameDir.suffixes')
             console.log "Adding images to non-markdown files is not supported"
             return false
 
-        if atom.config.get('markdown-image-assistant.imageDir') == defaultImageDir && atom.config.get('markdown-image-assistant.preserveFileNameInAssetsFolder')
-            assets_dir = path.basename(path.parse(target_file).name + "." + atom.config.get('markdown-image-assistant.imageDir'))
+        if atom.config.get('markdown-image-assistant-useSameDir.imageDir') == defaultImageDir && atom.config.get('markdown-image-assistant-useSameDir.preserveFileNameInAssetsFolder')
+            assets_dir = path.basename(path.parse(target_file).name + "." + atom.config.get('markdown-image-assistant-useSameDir.imageDir'))
         else
-            assets_dir = path.basename(atom.config.get('markdown-image-assistant.imageDir'))
+            assets_dir = path.basename(atom.config.get('markdown-image-assistant-useSameDir.imageDir'))
 
         # yeah this probably ineffiecent. -JacqsLabz
-        if atom.config.get('markdown-image-assistant.aUseSameDir')
+        if atom.config.get('markdown-image-assistant-useSameDir.aUseSameDir')
           assets_dir = ""
 
         assets_path = path.join(target_file, "..", assets_dir)
@@ -120,7 +120,7 @@ module.exports = MarkdownImageAssistant =
         md5 = crypto.createHash 'md5'
         md5.update(imgbuffer)
 
-        if !atom.config.get('markdown-image-assistant.prependTargetFileName')
+        if !atom.config.get('markdown-image-assistant-useSameDir.prependTargetFileName')
             if origname != ""
               img_filename = "#{origname}#{extname}"
             else
@@ -136,7 +136,7 @@ module.exports = MarkdownImageAssistant =
                 console.log "Copied file over to #{assets_path}"
                 # fix spaces in file name for atom's markdown preview
                 img_filename = encodeURIComponent(img_filename)
-                if atom.config.get('markdown-image-assistant.insertHtmlOverMarkdown')
+                if atom.config.get('markdown-image-assistant-useSameDir.insertHtmlOverMarkdown')
                   editor.insertText "<img alt=\"#{img_filename}\" src=\"#{assets_dir}/#{img_filename}\" width=\"\" height=\"\" >"
                 else
                   editor.insertText "![](#{assets_dir}/#{img_filename})"
