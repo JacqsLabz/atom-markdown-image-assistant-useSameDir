@@ -1,72 +1,9 @@
-# [atom-markdown-image-assistant](https://atom.io/packages/markdown-image-assistant)
+# About
 
-Add sane drag and drop and copy/paste support for images to markdown
-files. This is especially useful for notetaking in Atom.
+Please see [atom-markdown-image-assistant](https://atom.io/packages/markdown-image-assistant) for the full readme about what most of this package does. 99% of this package is the code from that package, so credit to [Tamas Nagy (tlnagy)](https://github.com/tlnagy) for his work in writing most of this code. 
 
-![](https://cloud.githubusercontent.com/assets/1661487/19503385/137f1da6-9568-11e6-9796-910e6927459d.gif)
+I've only added 2 very small things:
 
-## Atom Settings
+I probably coded this in an ineffiecent manner, but I've added a setting for using the same directory for the images as the markdown file. When it is checked/enabled, the asset folder setting is totally ignored/bypassed, so images get copied to whatever folder the markdown file is inside. This produces "!\[](/filename.jpg)" in the markdown file and the [atom markdown preview package](https://atom.io/packages/markdown-preview) doesn't seem to mind the extra / before the file name. 
 
-These settings can be accessed under Settings -> Packages -> Markdown
-Image Assistant.
-
-### Default Settings
-
-Whenever an image is dragged and dropped or copy and pasted on an open markdown file, this package automatically copies it to an `assets/` folder in the current directory, renames the image, and inserts a relative link to the image.
-
-### Active file types
-
-File type that image assistant should activate for
-
-### Image directory
-
-Default image directory
-
-### Preserve original file names
-
-When dragging and dropping files, whether to preserve original file names when copying over into the image directory
-
-### Use the Markdown filename
-
-Creates an asset folder in the form of `<fileroot>.assets/`.  Where
-`<fileroot>` is the root of the file without the supported Markdown extensions (`.markdown`, `.md`, `.mdown`, `.mkd`, `.mkdow`).
-
-
-### Insert image as Markup, instead of Markdown
-
-Insert an image as HTML Markup, `<img src=''>`, instead of Markdown, `![]()`.  Useful if you want to adjust image `width` or `height`
-
------
-
-
-## Installation
-
-This plugin can be installed via Atom's GUI or via the command line:
-
-```
-apm install markdown-image-assistant
-```
-
-
-### Demo
-* My Cat folder name
-```
-![](CAT-assets/README-684b45a8.jpg)
-```
-
-* Markup
-```
-<img alt="README-684b45a8.jpg" src="assets/README-684b45a8.jpg" width="" height="" >
-```
-* Per-file asset directory
-```
-![](README.assets/README-684b45a8.jpg)
-```
-
-* Preserve Original filename
-```
-![](README.assets/README-Fort-*ssHole.jpg)
-```
-
------
-![atom-image-assistant](https://cloud.githubusercontent.com/assets/118112/24306827/2db2494a-107f-11e7-969a-2581851aa816.gif)
+I also noticed that the [markdown preview package](https://atom.io/packages/markdown-preview) can't understand spaces in file names, and my image files have spaces in their file names. So, after the file is copied with the spaces in the file name intact, I've added a quick encodeURIComponent before that same file name is inserted into the editor. This only affects the file name not the asset path (I don't need the asset path, so I'm not bothering with it). 
