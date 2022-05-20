@@ -8,6 +8,11 @@ defaultImageDir = "assets/"
 module.exports = MarkdownImageAssistant =
     subscriptions: null
     config:
+        useSameDir:
+            title: "Images in Same Directory"
+            description: "Choose rather put the images in the same directory as the markdown file, ignoring the assets folder entirely."
+            type: 'boolean'
+            default: true
         suffixes:
             title: "Active file types"
             description: "File type that image assistant should activate for"
@@ -88,7 +93,7 @@ module.exports = MarkdownImageAssistant =
         e.stopImmediatePropagation()
         if Number process.versions.electron[0] >= 2
           imgbuffer = img.toPNG()
-        else 
+        else
           imgbuffer = img.toPng()
         @process_file(editor, imgbuffer, ".png", "")
 
@@ -104,7 +109,13 @@ module.exports = MarkdownImageAssistant =
             assets_dir = path.basename(path.parse(target_file).name + "." + atom.config.get('markdown-image-assistant.imageDir'))
         else
             assets_dir = path.basename(atom.config.get('markdown-image-assistant.imageDir'))
+
+        # yeah this probably ineffiecent. -JacqsLabz
+        if atom.config.get('markdown-image-assistant.useSameDir')
+          assets_dir = ""
+
         assets_path = path.join(target_file, "..", assets_dir)
+        console.log assets_path
 
         md5 = crypto.createHash 'md5'
         md5.update(imgbuffer)
@@ -123,6 +134,8 @@ module.exports = MarkdownImageAssistant =
         @create_dir assets_path, ()=>
             fs.writeFile path.join(assets_path, img_filename), imgbuffer, 'binary', ()=>
                 console.log "Copied file over to #{assets_path}"
+                # fix spaces in file name for atom's markdown preview
+                img_filename = encodeURIComponent(img_filename)
                 if atom.config.get('markdown-image-assistant.insertHtmlOverMarkdown')
                   editor.insertText "<img alt=\"#{img_filename}\" src=\"#{assets_dir}/#{img_filename}\" width=\"\" height=\"\" >"
                 else
