@@ -10,7 +10,7 @@ module.exports = MarkdownImageAssistant =
     config:
         aUseSameDir:
             title: "Images in Same Directory"
-            description: "Choose rather put the images in the same directory as the markdown file, ignoring the assets folder / image directory entirely."
+            description: "Choose rather put the images in the same directory as the markdown file, ignoring the assets folder / image directory setting entirely."
             type: 'boolean'
             default: true
         suffixes:
@@ -105,17 +105,15 @@ module.exports = MarkdownImageAssistant =
             console.log "Adding images to non-markdown files is not supported"
             return false
 
-        if atom.config.get('markdown-image-assistant-useSameDir.imageDir') == defaultImageDir && atom.config.get('markdown-image-assistant-useSameDir.preserveFileNameInAssetsFolder')
+        if atom.config.get('markdown-image-assistant-useSameDir.aUseSameDir')
+          assets_dir = ""
+        else if atom.config.get('markdown-image-assistant-useSameDir.imageDir') == defaultImageDir && atom.config.get('markdown-image-assistant-useSameDir.preserveFileNameInAssetsFolder')
             assets_dir = path.basename(path.parse(target_file).name + "." + atom.config.get('markdown-image-assistant-useSameDir.imageDir'))
         else
             assets_dir = path.basename(atom.config.get('markdown-image-assistant-useSameDir.imageDir'))
 
-        # yeah this probably ineffiecent. -JacqsLabz
-        if atom.config.get('markdown-image-assistant-useSameDir.aUseSameDir')
-          assets_dir = ""
-
         assets_path = path.join(target_file, "..", assets_dir)
-        console.log assets_path
+        console.log "Path: #{assets_path} - - Dir: #{assets_dir}"
 
         md5 = crypto.createHash 'md5'
         md5.update(imgbuffer)
@@ -134,12 +132,22 @@ module.exports = MarkdownImageAssistant =
         @create_dir assets_path, ()=>
             fs.writeFile path.join(assets_path, img_filename), imgbuffer, 'binary', ()=>
                 console.log "Copied file over to #{assets_path}"
-                # fix spaces in file name for atom's markdown preview
+
+                # fix spaces (and spacial characters) in file name for atom's markdown preview / general html purposes
                 img_filename = encodeURIComponent(img_filename)
-                if atom.config.get('markdown-image-assistant-useSameDir.insertHtmlOverMarkdown')
-                  editor.insertText "<img alt=\"#{img_filename}\" src=\"#{assets_dir}/#{img_filename}\" width=\"\" height=\"\" >"
+
+                # prep the path for the image
+                img_path = "" # is declaiming the variable before using it in the if statement good practice??? cuz I'm not a pro programmmer here. -JacqsLabz
+                if atom.config.get('markdown-image-assistant-useSameDir.aUseSameDir')
+                  img_path = img_filename
                 else
-                  editor.insertText "![](#{assets_dir}/#{img_filename})"
+                  img_path = "#{assets_dir}/#{img_filename}"
+
+                # use the image path for the image to make markup or markdown in the editor
+                if atom.config.get('markdown-image-assistant-useSameDir.insertHtmlOverMarkdown')
+                  editor.insertText "<img alt=\"#{img_filename}\" src=\"#{img_path}\" width=\"\" height=\"\" >"
+                else
+                  editor.insertText "![](#{img_path})"
 
         return false
 
